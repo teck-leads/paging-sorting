@@ -19,8 +19,15 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     List<Object[]> findEmployeeByDepartmentId(@Param("departmentId") Integer departmentId);
 
 
-    @Query(value = "SELECT e.employee_Id, e.employee_name, e.department_id FROM tech_leads.employees e, tech_leads.departments d WHERE e.department_id = d.dep_id AND d.dep_id = :departmentId",
+    @Query(value = "SELECT e.employee_Id, e.employee_name, e.department_id, d.department_name FROM tech_leads.employees e, tech_leads.departments d WHERE e.department_id = d.dep_id AND d.dep_id = :departmentId",
             countQuery = "SELECT COUNT(*) FROM tech_leads.employees e, tech_leads.departments d WHERE e.department_id = d.dep_id AND d.dep_id = :departmentId",
+            nativeQuery = true)
+    Page<Object[]> findEmployeeByDepartmentIdWithPagination1(@Param("departmentId") Integer departmentId, Pageable pageable);
+
+
+ //Query modified to use JOIN syntax for sorting issue, now sorting department_name column is working
+    @Query(value = "SELECT e.employee_Id, e.employee_name, e.department_id, d.department_name FROM tech_leads.employees e JOIN tech_leads.departments d ON e.department_id = d.dep_id WHERE d.dep_id = :departmentId",
+            countQuery = "SELECT COUNT(*) FROM tech_leads.employees e JOIN tech_leads.departments d ON e.department_id = d.dep_id WHERE d.dep_id = :departmentId",
             nativeQuery = true)
     Page<Object[]> findEmployeeByDepartmentIdWithPagination(@Param("departmentId") Integer departmentId, Pageable pageable);
 }
