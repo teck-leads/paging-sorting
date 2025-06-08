@@ -1,6 +1,7 @@
 package com.techleads.paging.app.service;
 
 import com.techleads.paging.app.dto.UserDto;
+import com.techleads.paging.app.entity.User;
 import com.techleads.paging.app.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,7 +24,8 @@ public class UserService {
 
     public List<UserDto> findUserDetails(
             String userId){
-        return userRepository.findUserDetails(userId);
+        return userRepository.findUserDetailsNative(userId);
+//        return userRepository.findUserDetails(userId);
 
     }
 
@@ -56,4 +58,13 @@ public class UserService {
 //            return new ArrayList<EmployeeEntity>();
 //        }
 //    }
+
+    public User updateUserNameById(String name, Integer id) {
+        int count = userRepository.updateUserNameById(name, id);
+        if(count == 0) {
+            throw new RuntimeException("User not found with id and not updated: " + id);
+        }
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+    }
 }
