@@ -8,7 +8,9 @@ import com.techleads.paging.app.entity.Employee;
 import com.techleads.paging.app.repository.DepartmentRepository;
 import com.techleads.paging.app.repository.EmployeeRepository;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -87,10 +89,12 @@ public class EmployeeService {
                 Integer employeeId = (Integer) obj[0];
                 String employeeName = (String) obj[1];
                 Integer departmentId = (Integer) obj[2];
+
                 EmpResponseDTO dto =new EmpResponseDTO();
                 dto.setEmployeeId(employeeId);
                 dto.setEmployeeName(employeeName);
                 dto.setDepId(departmentId);
+                dto.setDepartmentName( (String) obj[3]);
                 empResponseDTOList.add(dto);
             }
             return empResponseDTOList;
@@ -110,6 +114,7 @@ public class EmployeeService {
                 dto.setEmployeeId((Integer) obj[0]);
                 dto.setEmployeeName((String) obj[1]);
                 dto.setDepId((Integer) obj[2]);
+                dto.setDepartmentName( (String) obj[3]);
                 return dto;
             });
             return empResponseDTOPage;
@@ -128,6 +133,49 @@ public class EmployeeService {
                 dto.setEmployeeId((Integer) obj[0]);
                 dto.setEmployeeName((String) obj[1]);
                 dto.setDepId((Integer) obj[2]);
+                dto.setDepartmentName( (String) obj[3]);
+                return dto;
+            });
+
+            EmployeePage employeePage = new EmployeePage();
+
+            if(empResponseDTOPage.hasContent()) {
+
+                employeePage.setEmployees(empResponseDTOPage.getContent());
+                employeePage.setTotalPages(empResponseDTOPage.getTotalPages());
+                employeePage.setTotalElements(empResponseDTOPage.getTotalElements());
+                employeePage.setLast(empResponseDTOPage.isLast());
+                employeePage.setSize(empResponseDTOPage.getSize());
+
+                employeePage.setNumber(empResponseDTOPage.getNumber());
+                employeePage.setNumberOfElements(empResponseDTOPage.getNumberOfElements());
+
+            } else {
+                employeePage.setEmployees(new ArrayList<>());
+            }
+
+
+            return employeePage;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public EmployeePage findEmployeesByDepartmentWithPaginationSortingReturnEmployeePage(Integer departmentId, Integer pageNo, Integer pageSize, String sortBy, String sortDirection){
+        try {
+            Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
+//            Pageable pageable1 = Pageable.ofSize(pageSize).withPage(pageNo).
+//                    withSort(Sort.by(Sort.Direction.fromString(sortDirection), sortBy));
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+//            Pageable pageable = Pageable.ofSize(pageSize).withPage(pageNo);
+            Page<Object[]> paginatedResult = employeeRepository.findEmployeeByDepartmentIdWithPagination(departmentId, pageable);
+
+            Page<EmpResponseDTO> empResponseDTOPage = paginatedResult.map(obj -> {
+                EmpResponseDTO dto = new EmpResponseDTO();
+                dto.setEmployeeId((Integer) obj[0]);
+                dto.setEmployeeName((String) obj[1]);
+                dto.setDepId((Integer) obj[2]);
+                dto.setDepartmentName( (String) obj[3]);
                 return dto;
             });
 

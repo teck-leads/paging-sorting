@@ -5,6 +5,7 @@ public class EmpResponseDTO {
     private int employeeId;
     private String employeeName;
     private int depId;
+    private String departmentName;
 
     public EmpResponseDTO() {
     }
@@ -14,6 +15,14 @@ public class EmpResponseDTO {
         this.employeeName = employeeName;
         this.depId = depId;
     }
+
+    public EmpResponseDTO(int employeeId, String employeeName, int depId, String departmentName) {
+        this.employeeId = employeeId;
+        this.employeeName = employeeName;
+        this.depId = depId;
+        this.departmentName = departmentName;
+    }
+
 
     public int getEmployeeId() {
         return employeeId;
@@ -37,5 +46,11 @@ public class EmpResponseDTO {
 
     public void setDepId(int depId) {
         this.depId = depId;
+    }
+    public String getDepartmentName() {
+        return departmentName;
+    }
+    public void setDepartmentName(String departmentName) {
+        this.departmentName = departmentName;
     }
 }
